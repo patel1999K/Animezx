@@ -3,48 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <title>Animezx</title>
+
 <style>
-*{
-  box-sizing:border-box;
-}
-body{
+html,body{
   margin:0;
-  background:#0b0b0b;
+  background:#000;
 }
-.grid{
+#grid{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:6px;
-  padding:6px;
+  grid-template-columns:repeat(4,1fr);
 }
-.poster{
-  border-radius:8px;
-  overflow:hidden;
-}
-.poster img{
+img{
   width:100%;
-  height:100%;
   display:block;
+}
+#detail{
+  position:fixed;
+  inset:0;
+  background:#000;
+  color:#fff;
+  display:none;
+  overflow:auto;
+}
+#detail img{
+  width:100%;
+}
+.btn{
+  padding:10px;
+  background:#111;
+  color:#fff;
+  text-align:center;
 }
 </style>
 </head>
 
 <body>
 
-<div class="grid" id="grid"></div>
+<div id="grid"></div>
+
+<div id="detail" onclick="this.style.display='none'">
+  <img id="dimg">
+  <div class="btn" id="dtitle"></div>
+  <div class="btn" id="dinfo"></div>
+</div>
 
 <script>
-document.getElementById("grid").innerHTML = "";
-
-fetch("https://api.jikan.moe/v4/top/anime?limit=24")
-.then(res => res.json())
-.then(data => {
-  data.data.forEach(anime => {
-    document.getElementById("grid").innerHTML += `
-      <div class="poster">
-        <img src="${anime.images.jpg.large_image_url}">
-      </div>
-    `;
+fetch("https://api.jikan.moe/v4/top/anime?limit=40")
+.then(r=>r.json())
+.then(d=>{
+  let g=document.getElementById("grid");
+  d.data.forEach(a=>{
+    let i=document.createElement("img");
+    i.src=a.images.jpg.large_image_url;
+    i.onclick=()=>{
+      document.getElementById("detail").style.display="block";
+      document.getElementById("dimg").src=a.images.jpg.large_image_url;
+      document.getElementById("dtitle").innerText=a.title;
+      document.getElementById("dinfo").innerText=
+        "Episodes: "+(a.episodes||"?")+" | Score: "+(a.score||"?");
+    };
+    g.appendChild(i);
   });
 });
 </script>
